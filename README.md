@@ -1,5 +1,5 @@
 # LaraMap
- ```js
+ ```html
  <!DOCTYPE html>
 <html>
   <head>
@@ -21,7 +21,9 @@
     </style>
   </head>
   <body>
-    <div id="map"></div>
+	  <div id="map"></div>
+```
+ ```js
     <script>
 
       // This example creates an interactive map which constructs a polyline based on
@@ -71,6 +73,8 @@
 	<script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyACLTLeNgkCI8smLndudh4LmL_P2NMWp5g&callback=initMap">
     </script>
+    ```
+    ```html
   </body>
 </html>
  ```
