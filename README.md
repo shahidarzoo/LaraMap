@@ -69,12 +69,12 @@
 		console.log(event.pa.x);
 		//console.log(map);
       }
+      ```
+      ```html
     </script>
 	<script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyACLTLeNgkCI8smLndudh4LmL_P2NMWp5g&callback=initMap">
     </script>
-    ```
-    ```html
   </body>
 </html>
  ```
