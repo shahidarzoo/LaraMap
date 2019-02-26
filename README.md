@@ -1,4 +1,4 @@
-# LaraMap
+# Geofencing Laravel Map
  ```html
  <!DOCTYPE html>
 <html>
