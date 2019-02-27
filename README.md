@@ -28,11 +28,9 @@
       integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
       crossorigin="anonymous"></script>
         <script>
-            var poly;
-            var map;
-            var lat ;
-            var lng ;
-
+        var poly;
+        var map;
+            
         function initMap() 
         {
             map = new google.maps.Map(document.getElementById('map'), {
@@ -41,9 +39,17 @@
             });
 
             poly = new google.maps.Polyline({
-              strokeColor: '#000000',
-              strokeOpacity: 1.0,
-              strokeWeight: 3
+                strokeOpacity: 1.0,
+                strokeWeight: 3,
+                strokeColor: '#FF0000',
+
+            });
+            poly = new google.maps.Polygon({
+                    strokeColor: '#FF0000',
+                    strokeOpacity: 0.8,
+                    strokeWeight: 2,
+                    fillColor: '#FF0000',
+                    fillOpacity: 0.35
             });
             $.ajax({
                 url: 'show-data',
@@ -55,11 +61,9 @@
                 {
                     var latval = val.lat;
                     var lngval = val.lng;
-                    var latlng = new google.maps.LatLng(latval, lngval);
                     if(lngval != '')
                     {
-                        renderMap(latlng);
-                        createMarker(latlng)
+                        renderMap(latval, lngval);
                     }
                    
                 });
@@ -69,38 +73,28 @@
                 console.log("error");
             });
             // Map Render here
-            function renderMap(latlng)
-               /* var redCoords = [
-                  {lat: latval, lng: lngval}
-                ];
-                poly = new google.maps.Polygon({
-                  map: map,
-                  paths: redCoords,
-                  strokeColor: '#FF0000',
-                  strokeOpacity: 0.8,
-                  strokeWeight: 2,
-                  fillColor: '#FF0000',
-                  fillOpacity: 0.35,
-                  draggable: true,
-                  geodesic: true
-                });*/
+            function renderMap(latval, lngval)
             {
+                var latlng = new google.maps.LatLng(latval, lngval);
                 var path = poly.getPath();
                 path.push(latlng);
             }
 
-            function createMarker(latlng)
-            {
-                var marker = new google.maps.Marker({
-                    position: latlng,
-                    map: map,
-                    icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
-                 });
-            }
             poly.setMap(map);
 
             // Add a listener for the click event
             map.addListener('click', addLatLng);
+            
+        }
+
+        function createMarker(latval, lngval)
+        {
+            var latlng = new google.maps.LatLng(latval, lngval);
+            var marker = new google.maps.Marker({
+                position: latlng,
+                map: map,
+                icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
+             });
         }
 
           // Handles click events on a map, and adds a new point to the Polyline.
