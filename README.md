@@ -1,148 +1,201 @@
 # Geofencing Laravel Map
  ```html
- <!DOCTYPE html>
-<html>
-  <head>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-    <meta charset="utf-8">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Complex Polylines</title>
-    <style>
-      /* Always set the map height explicitly to define the size of the div
-       * element that contains the map. */
-      #map {
-        height: 100%;
-      }
-      /* Optional: Makes the sample page fill the window. */
-      html, body {
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-    </style>
-  </head>
-  <body>
-    <div id="map"></div>
-    <script
-      src="https://code.jquery.com/jquery-3.3.1.min.js"
-      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-      crossorigin="anonymous"></script>
-        <script>
-        var poly;
-        var map;
-            
-        function initMap() 
+ var poly;
+var map;
+
+function initMap() 
+{
+    map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 7,
+        draggable: true,
+       // Center the map on Islamabad, Pakistan.
+       center: {lat: 33.6844, lng: 73.0479},
+   });
+    /* Change Line color and opicity */
+    poly = new google.maps.Polyline({
+        strokeOpacity: 1.0,
+        strokeWeight: 3,
+        strokeColor: '#FF0000'
+    });
+
+    
+    /* shaded polyline inside area*/
+    poly = new google.maps.Polygon({
+        strokeColor: "#FF0000",
+        strokeOpacity: 0.8,
+        strokeWeight: 2,
+        fillColor: "#FF0000",
+        fillOpacity: 0.35,
+        map: map,
+        draggable: true,
+        editable: true,
+        geodesic: true
+    });
+
+    
+    /* Marker Option */
+     var marker_options = {
+        map: map,
+        flat: true,
+        draggable: true,
+        raiseOnDrag: false
+    };
+
+
+    /*google.maps.event.addListener(marker_options, "click", function (event) 
+    {
+        var latitude = event.latLng.lat();
+        var longitude = event.latLng.lng();
+        alert(latitude);
+    });*/
+    /* Ajax call to fetech data from database */
+    $.ajax({
+        url: 'show-data',
+        type: 'GET',
+    })
+    .done(function(res) 
+    {
+       
+        $.each(res, function(i, val)
         {
-            map = new google.maps.Map(document.getElementById('map'), {
-              zoom: 7,
-              center: {lat: 33.6844, lng: 73.0479}  // Center the map on Chicago, USA.
-            });
-
-            poly = new google.maps.Polyline({
-                strokeOpacity: 1.0,
-                strokeWeight: 3,
-                strokeColor: '#FF0000',
-
-            });
-            poly = new google.maps.Polygon({
-                    strokeColor: '#FF0000',
-                    strokeOpacity: 0.8,
-                    strokeWeight: 2,
-                    fillColor: '#FF0000',
-                    fillOpacity: 0.35
-            });
-            $.ajax({
-                url: 'show-data',
-                type: 'GET',
-            })
-            .done(function(res) 
+            var latval = val.lat;
+            var lngval = val.lng;
+            if(lngval != '')
             {
-                $.each(res, function(i, val)
-                {
-                    var latval = val.lat;
-                    var lngval = val.lng;
-                    if(lngval != '')
-                    {
-                        renderMap(latval, lngval);
-                    }
-                   
-                });
-                
-            })
-            .fail(function() {
-                console.log("error");
-            });
-            // Map Render here
-            function renderMap(latval, lngval)
-            {
-                var latlng = new google.maps.LatLng(latval, lngval);
-                var path = poly.getPath();
-                path.push(latlng);
+                renderMap(latval, lngval);
             }
-
-            poly.setMap(map);
-
-            // Add a listener for the click event
-            map.addListener('click', addLatLng);
+        });
+      /*  for (var i=0; i<res.length; i++)
+        {
+            marker_options.position = res[i];
+            var point = new google.maps.Marker(marker_options);
             
+            google.maps.event.addListener(point, "dragend", update_polygon_closure(poly, i));
+        }*/
+        google.maps.event.addListener(poly, 'dragend', function(e)
+        {        
+                console.log(e.latLng.lat());
+        });
+
+        
+    })
+    .fail(function() 
+    {
+        console.log("error");
+    });
+   
+    /* Map Render here */
+    function renderMap(latval, lngval)
+    {
+        var latlng = new google.maps.LatLng(latval, lngval);
+        var path = poly.getPath();
+        path.push(latlng);
+
+
+    }
+
+    poly.setMap(map);
+
+
+    // Add a listener for the click event
+    map.addListener('click', addLatLng);
+    
+}// End of InitMap Function
+
+
+
+// click listner
+  
+
+
+/* Create Dragable function */
+function update_polygon_closure(poly, i)
+{
+
+   // console.log(poly);
+    return function(event)
+    {
+        /*var dragLat = event.latLng.lat();
+        console.log(dragLat);*/
+        var latitude = event.latLng.lat();
+        console.log(latitude);
+        displayCoordinates(event.latLng); 
+    }
+}
+
+
+// Handles click events on a map, and adds a new point to the Polyline.
+function addLatLng(event) 
+{
+
+    displayCoordinates(event.latLng);
+    var path = poly.getPath();
+
+    // Because path is an MVCArray, we can simply append a new coordinate
+    // and it will automatically appear.
+    path.push(event.latLng);
+
+    // Add a new marker at the new plotted point on the polyline.
+    var marker = new google.maps.Marker({
+      position: event.latLng,
+      title: '#' + path.getLength(),
+      map: map
+  });
+}
+
+/* Draw Marker */
+function createMarker(latval, lngval)
+{
+    var latlng = new google.maps.LatLng(latval, lngval);
+    var marker = new google.maps.Marker({
+        position: latlng,
+        map: map,
+        //flat: true,
+        draggable: true,
+        raiseOnDrag: false
+        //icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
+    });
+}
+
+
+/* Display Coordinates */
+function displayCoordinates(pnt) 
+{
+    var lat = pnt.lat();
+    //lat = lat.toFixed(4);
+    var lng = pnt.lng();
+    //lng = lng.toFixed(4);
+    //console.log("Latitude: " + lat + "  Longitude: " + lng);
+
+    /* Create Token to protect from CSRF */
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
+    });
 
-        function createMarker(latval, lngval)
-        {
-            var latlng = new google.maps.LatLng(latval, lngval);
-            var marker = new google.maps.Marker({
-                position: latlng,
-                map: map,
-                icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
-             });
-        }
-
-          // Handles click events on a map, and adds a new point to the Polyline.
-        function addLatLng(event) 
-        {
-            displayCoordinates(event.latLng); 
-            var path = poly.getPath();
-
-            // Because path is an MVCArray, we can simply append a new coordinate
-            // and it will automatically appear.
-            path.push(event.latLng);
-
-            // Add a new marker at the new plotted point on the polyline.
-            var marker = new google.maps.Marker({
-              position: event.latLng,
-              title: '#' + path.getLength(),
-              map: map
-            });
-          }
-        function displayCoordinates(pnt) 
-        {
-
-          var lat = pnt.lat();
-          //lat = lat.toFixed(4);
-          var lng = pnt.lng();
-          //lng = lng.toFixed(4);
-          //console.log("Latitude: " + lat + "  Longitude: " + lng);
-           $.ajaxSetup({
-              headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-              }
-            });
-          $.ajax({
-            url: 'geofence',
-            type: 'POST',
-            data: {lat: lat,lng: lng},
-            })
-            .done(function() {
-                console.log("success");
-            })
-            .fail(function() {
-                console.log("error");
-            })
-        }
-        </script>
-        <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap">
-        </script>
-  </body>
-</html>
+    /* Ajax Request to post data to database */
+    $.ajax({
+        url: 'geofence',
+        type: 'POST',
+        data: {lat: lat,lng: lng},
+    })
+    .done(function() 
+    {
+        console.log("success");
+    })
+    .fail(function() 
+    {
+        console.log("error");
+    })
+}
+function enable() 
+{
+    return map.setOptions({
+        draggable: true,
+        zoomControl: true,
+        scrollwheel: true,
+        disableDoubleClickZoom: true
+    });
+}
  ```
