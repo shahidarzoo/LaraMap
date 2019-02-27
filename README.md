@@ -1,3 +1,19 @@
+```php
+Route::get('/map', 'GeofenceController@index');
+Route::post('/geofence', 'GeofenceController@store');
+Route::get('/render-map', 'GeofenceController@render');
+Route::get('/show-data', 'GeofenceController@show');
+
+
+// Dragabel
+
+Route::get('/drag', 'GeofenceController@drag');
+```
+```html
+
+
+```
+
 # Geofencing Laravel Map
  ```js
  var poly;
