@@ -1,5 +1,5 @@
 # Geofencing Laravel Map
- ```html
+ ```js
  var poly;
 var map;
 
