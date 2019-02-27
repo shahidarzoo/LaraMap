@@ -61,9 +61,9 @@ class GeofenceController extends Controller
      * @param  \App\Geofence  $geofence
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Geofence $geofence)
+    public function drag()
     {
-        //
+        return view('map.mapdrag');
     }
 
     /**
