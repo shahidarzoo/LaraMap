@@ -1,3 +1,4 @@
+# Geofencing Laravel Map
 ```php
 Route::get('/map', 'GeofenceController@index');
 Route::post('/geofence', 'GeofenceController@store');
@@ -16,12 +17,6 @@ Route::get('/delete-old-points', 'GeofenceController@delete_old_point');
 
 Route::get('/drag', 'GeofenceController@drag');
 ```
-```html
-
-
-```
-
-# Geofencing Laravel Map
  ```js
  var poly;
 var map;
