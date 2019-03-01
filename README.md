@@ -57,7 +57,6 @@ function initMap()
         raiseOnDrag: false
   };
 
-
   /*google.maps.event.addListener(marker_options, "click", function (event) 
   {
       var latitude = event.latLng.lat();
@@ -80,6 +79,7 @@ function initMap()
             {
                 renderMap(latval, lngval);
                 createMarker(latval, lngval);
+                
             }
         });
     /*  for (var i=0; i<res.length; i++)
@@ -114,7 +114,7 @@ function initMap()
     poly.setMap(map);
 
     poly.addListener('rightclick', function (event) {
-        var lat = event.latLng.lat();;
+        var lat = event.latLng.lat();
         var lng = event.latLng.lng();
         delete_polygon(lat);
         removeVertex(event.vertex)
@@ -125,6 +125,15 @@ function initMap()
         document.getElementById("lat").value = e.latLng.lat();
         document.getElementById("lng").value = e.latLng.lng();
     });
+
+    var place_polygon_path = poly.getPath()
+    //google.maps.event.addListener(place_polygon_path, 'set_at', polygonChanged);
+    google.maps.event.addListener(place_polygon_path, 'insert_at', polygonChanged);
+
+    function polygonChanged(event)
+    {
+        console.log('changed');
+    }
 
   // Add a listener for the click event
     map.addListener('click', addLatLng);
@@ -179,6 +188,7 @@ function createMarker(latval, lngval)
         position: latlng,
         map: map,
         flat: true,
+        title: 'Latitude',
         //draggable: true,
         raiseOnDrag: false,
         icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
