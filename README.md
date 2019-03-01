@@ -5,6 +5,13 @@ Route::get('/render-map', 'GeofenceController@render');
 Route::get('/show-data', 'GeofenceController@show');
 
 
+public function delete_old_point()
+{
+    	$cordinates = Geofence::truncate();
+    	return response()->json($cordinates);
+}
+Route::get('/delete-old-points', 'GeofenceController@delete_old_point');
+
 // Dragabel
 
 Route::get('/drag', 'GeofenceController@drag');
